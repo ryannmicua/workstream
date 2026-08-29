@@ -96,7 +96,7 @@ export async function run(argv) {
         result = addCommand(args, flags);
         break;
       case 'remove':
-        result = removeCommand(args, flags);
+        result = await removeCommand(args, flags);
         break;
       case 'setup': {
         const { setupCommand } = await import('./commands/setup.mjs');
