@@ -33,14 +33,12 @@ export async function removeCommand(args, flags) {
       );
     }
 
-    process.stdout.write(`Remove "${name}"? [y/N] `);
     const rl = createInterface({ input: process.stdin, output: process.stdout });
     const answer = await new Promise(resolve => {
-      rl.on('line', line => {
+      rl.question(`Remove "${name}"? [y/N] `, line => {
         rl.close();
         resolve(line.trim().toLowerCase());
       });
-      rl.on('close', () => resolve(''));
     });
     if (answer !== 'y' && answer !== 'yes') {
       return { message: 'Cancelled.' };
