@@ -1,6 +1,6 @@
 # Vision
 
-`workstream-router` exists so that any AI agent session can locate and load context about any related work from any project folder.
+`workstream` exists so that any AI agent session can locate and load context about any related work from any project folder.
 A workstream can be anything: a folder, a GitHub repo, a URL, a ticket, a system, a service.
 It serves the operator who runs multiple repos, tickets, systems, and services, and it turns scattered references into a single queryable surface.
 It owns exactly one thing: the workstream registry.

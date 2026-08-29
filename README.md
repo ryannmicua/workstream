@@ -1,4 +1,4 @@
-# Workstream Router
+# Workstream
 
 A universal reference system for AI agents — locate and load context about any related work from any project folder.
 
@@ -76,4 +76,14 @@ The registry is a flat YAML list. No validation — if it parses as YAML, it wor
 
 ## Status
 
-Brainstorming phase. See `HANDOFF.md` for context and next steps.
+**Done:** Vision approved. Schema designed. v1 capabilities defined. Strategy written.
+**Next:** Build the skill, build a minimal v1 registry, test routing.
+
+See `VISION.md` for principles and scope. See `STRATEGY.md` for direction.
+
+## Traps
+
+- Don't over-engineer the schema. A flat YAML list that agents can grep is the target.
+- The registry must be writable by hand or by operator-instructed agents.
+- Paseo's `projects.json` already exists — don't duplicate that data.
+- Each repo has its own AGENTS.md conventions. Point to the entry file, don't summarize.

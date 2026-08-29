@@ -1,7 +1,7 @@
-# AGENTS.md — workstream-router
+# AGENTS.md — workstream
 
 ## Start here
 
-Read `HANDOFF.md` first. It has state, decisions, and next actions.
-
-Read `VISION.md` for what we're building and why.
+Read `README.md` for project overview, schema, and status.
+Read `VISION.md` for principles and scope.
+Read `STRATEGY.md` for direction and decisions.

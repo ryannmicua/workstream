@@ -1,9 +1,9 @@
 ---
-name: workstream-router
+name: workstream
 last_updated: 2026-08-29
 ---
 
-# workstream-router Strategy
+# workstream Strategy
 
 See VISION.md for the project's principles; this document carries direction.
 
