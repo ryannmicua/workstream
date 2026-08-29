@@ -24,7 +24,7 @@ The registry is a flat YAML list. No validation — if it parses as YAML, it wor
 |-------|----------|-------------|
 | `name` | yes | Human-readable identifier |
 | `path` | yes | Where the workstream lives |
-| `context` | yes | Entry file to load |
+| `context` | no | Entry file to load |
 | `description` | no | One-liner |
 
 **Examples:**
