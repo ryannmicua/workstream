@@ -16,9 +16,43 @@ Anything you're actively working on or need to reference:
 | scheduled | Heartbeat, cron job |
 | external | Entra ID, M365 Teams, Synology NFS |
 
+## Install
+
+```bash
+# From a clone of this repo:
+npm install -g .
+
+# Then run setup:
+workstream setup
+```
+
+**Prerequisites:** Node.js 22+, npm, and npm's global bin directory on PATH.
+Check with `npm prefix -g` — that directory must be in your `$PATH`.
+
+**Platform support:** Linux, macOS, and native Windows (PowerShell and cmd).
+
+## Usage
+
+```bash
+# List registered workstreams
+workstream list
+
+# Find a workstream and load its context
+workstream find heypogi
+
+# Add a new workstream
+workstream add myproject --path /path/to/project --context AGENTS.md --desc "My project"
+
+# Remove a workstream
+workstream remove myproject -q
+
+# Run setup (creates registry, installs skill, configures completion)
+workstream setup
+```
+
 ## Schema
 
-The registry is a flat YAML list. No validation — if it parses as YAML, it works.
+The registry is a flat YAML list at `~/.workstream/registry.yaml`.
 
 | Field | Required | Description |
 |-------|----------|-------------|
@@ -67,17 +101,25 @@ The registry is a flat YAML list. No validation — if it parses as YAML, it wor
 
 ## Capabilities
 
-- **Setup** — install skill, create registry
-- **Load** — parse the YAML registry
-- **List** — show available workstreams
-- **Route** — load a workstream's context file by name
+- **Setup** — install skill, create registry, configure completion
+- **List** — show available workstreams (--names, --full, --match)
+- **Find** — load a workstream's context by name
 - **Add** — append a new entry
 - **Remove** — delete an entry
 
+## How `find` works
+
+- **Local context files** — returns the file contents directly
+- **Non-local paths** (URLs, ssh-style) — returns the reference; fetch by other means
+- **Missing context** — returns the reference with a warning, never errors
+
+## Agent skill
+
+The installed skill at `~/.claude/skills/workstream/SKILL.md` lets agents resolve workstreams by name without knowing file paths.
+
 ## Status
 
-**Done:** Vision approved. Schema designed. v1 capabilities defined. Strategy written.
-**Next:** Build the skill, build a minimal v1 registry, test routing.
+**Done:** Vision approved. Schema designed. v1 implemented. CLI, skill, setup, and completions shipped.
 
 See `VISION.md` for principles and scope. See `STRATEGY.md` for direction.
 

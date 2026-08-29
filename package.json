@@ -1,0 +1,22 @@
+{
+  "name": "workstream",
+  "version": "0.1.0",
+  "description": "A universal reference system for AI agents — locate and load context about any related work from any project folder.",
+  "type": "module",
+  "bin": {
+    "workstream": "./bin/workstream.mjs"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "yaml": "2.9.0"
+  },
+  "keywords": [
+    "agent",
+    "context",
+    "registry",
+    "workstream"
+  ],
+  "license": "MIT"
+}
