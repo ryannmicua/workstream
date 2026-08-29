@@ -1,0 +1,8 @@
+{
+  "runtime": "paseo",
+  "isolation": "worktree",
+  "workspace_id": "wks_263acd7268777586",
+  "branch": "feat/workstream-cli",
+  "worktree_path": "/home/rgm/.paseo/worktrees/0vglmmv5/feat-workstream-cli",
+  "base_branch": "master"
+}
