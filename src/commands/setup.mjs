@@ -3,6 +3,7 @@ import { join, dirname } from 'node:path';
 import { homedir } from 'node:os';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { execFile } from 'node:child_process';
 import { getRegistryPath } from '../registry.mjs';
 import { WorkstreamError } from '../errors.mjs';
 
@@ -52,7 +53,18 @@ export async function setupCommand(args, flags) {
     );
   }
 
-  // 1. Create registry
+  // 1. Link CLI binary globally
+  const repoDir = join(SCRIPT_DIR, '..', '..');
+  const linked = await new Promise(resolve => {
+    execFile('npm', ['link'], { cwd: repoDir }, err => resolve(!err));
+  });
+  if (linked) {
+    results.push({ artifact: 'cli', status: 'linked', path: '/usr/bin/workstream' });
+  } else {
+    results.push({ artifact: 'cli', status: 'manual', path: repoDir, note: 'run: sudo npm link' });
+  }
+
+  // 2. Create registry
   const registryPath = getRegistryPath();
   const registryDir = dirname(registryPath);
 
@@ -67,26 +79,32 @@ export async function setupCommand(args, flags) {
     results.push({ artifact: 'registry', status: 'already present', path: registryPath });
   }
 
-  // 2. Install agent skill
-  const skillDir = join(home, '.claude', 'skills', 'workstream');
-  const skillPath = join(skillDir, 'SKILL.md');
-
-  if (!existsSync(skillDir)) {
-    mkdirSync(skillDir, { recursive: true });
-  }
-
+  // 3. Install agent skill
   const skillSource = join(SCRIPT_DIR, '..', '..', 'skill', 'SKILL.md');
+  const versionStamp = `<!-- installed from workstream ${getPackageVersion()} -->\n`;
 
-  if (existsSync(skillSource)) {
-    const sourceContent = readFileSync(skillSource, 'utf8');
-    const versionStamp = `<!-- installed from workstream ${getPackageVersion()} -->\n`;
-    writeFileSync(skillPath, versionStamp + sourceContent, 'utf8');
-    results.push({ artifact: 'skill', status: 'created', path: skillPath });
-  } else {
-    results.push({ artifact: 'skill', status: 'skipped', path: skillPath, note: 'source not found' });
+  const installSkill = (targetDir) => {
+    if (!existsSync(targetDir)) {
+      mkdirSync(targetDir, { recursive: true });
+    }
+    const skillPath = join(targetDir, 'SKILL.md');
+    if (existsSync(skillSource)) {
+      writeFileSync(skillPath, versionStamp + readFileSync(skillSource, 'utf8'), 'utf8');
+      return { artifact: 'skill', status: 'created', path: skillPath };
+    }
+    return { artifact: 'skill', status: 'skipped', path: skillPath, note: 'source not found' };
+  };
+
+  results.push(installSkill(join(home, '.agents', 'skills', 'workstream')));
+
+  const claudePresent = await new Promise(resolve => {
+    execFile('which', ['claude'], err => resolve(!err));
+  });
+  if (claudePresent) {
+    results.push(installSkill(join(home, '.claude', 'skills', 'workstream')));
   }
 
-  // 3. Install bash completion
+  // 4. Install bash completion
   const completionDir = join(home, '.local', 'share', 'bash-completion', 'completions');
   const bashCompletionPath = join(completionDir, 'workstream');
   const bashSource = join(SCRIPT_DIR, '..', '..', 'completions', 'workstream.bash');
@@ -105,10 +123,35 @@ export async function setupCommand(args, flags) {
   }
 
   // Summary
-  const summary = results.map(r => {
-    const line = `${r.artifact}: ${r.status}`;
-    return r.note ? `${line} (${r.note})` : line;
-  }).join('\n');
+  const lines = [];
+  const pad = 22;
+  for (const r of results) {
+    const label = r.artifact.padEnd(pad);
+    switch (r.status) {
+      case 'linked':
+        lines.push(`${label} ${r.path}`);
+        break;
+      case 'manual':
+        lines.push(`${label} ${r.note}`);
+        lines.push(`${''.padEnd(pad)} from ${r.path}`);
+        break;
+      case 'created':
+        lines.push(`${label} ${r.path}`);
+        break;
+      case 'already present':
+        lines.push(`${label} ${r.path} (already exists)`);
+        break;
+      case 'available':
+        lines.push(`${label} ${r.path}`);
+        lines.push(`${''.padEnd(pad)} ${r.note}`);
+        break;
+      case 'skipped':
+        lines.push(`${label} skipped — ${r.note}`);
+        break;
+      default:
+        lines.push(`${label} ${r.status}`);
+    }
+  }
 
-  return { message: summary };
+  return { message: lines.join('\n') };
 }
