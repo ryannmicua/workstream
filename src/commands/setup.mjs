@@ -59,7 +59,11 @@ export async function setupCommand(args, flags) {
     execFile('npm', ['link'], { cwd: repoDir }, err => resolve(!err));
   });
   if (linked) {
-    results.push({ artifact: 'cli', status: 'linked', path: '/usr/bin/workstream' });
+    const globalPrefix = await new Promise(resolve => {
+      execFile('npm', ['prefix', '-g'], (err, stdout) => resolve(err ? '' : stdout.trim()));
+    });
+    const linkPath = globalPrefix ? join(globalPrefix, 'bin', 'workstream') : 'workstream (in global PATH)';
+    results.push({ artifact: 'cli', status: 'linked', path: linkPath });
   } else {
     results.push({ artifact: 'cli', status: 'manual', path: repoDir, note: 'run: sudo npm link' });
   }
@@ -97,9 +101,7 @@ export async function setupCommand(args, flags) {
 
   results.push(installSkill(join(home, '.agents', 'skills', 'workstream')));
 
-  const claudePresent = await new Promise(resolve => {
-    execFile('which', ['claude'], err => resolve(!err));
-  });
+  const claudePresent = existsSync(join(home, '.claude'));
   if (claudePresent) {
     results.push(installSkill(join(home, '.claude', 'skills', 'workstream')));
   }
