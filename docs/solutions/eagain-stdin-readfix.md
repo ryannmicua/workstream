@@ -17,11 +17,10 @@ const answer = readFileSync(process.stdin.fd, 'utf8').trim().toLowerCase();
 // After (correct):
 const rl = createInterface({ input: process.stdin, output: process.stdout });
 const answer = await new Promise(resolve => {
-  rl.on('line', line => {
+  rl.question('Remove? [y/N] ', line => {
     rl.close();
     resolve(line.trim().toLowerCase());
   });
-  rl.on('close', () => resolve(''));
 });
 ```
 
