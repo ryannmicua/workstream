@@ -53,14 +53,17 @@ describe('remove', () => {
       '- name: test\n  path: /tmp/test\n', 'utf8');
     const originalIsTTY = process.stdin.isTTY;
     Object.defineProperty(process.stdin, 'isTTY', { value: false, configurable: true });
-    await assert.rejects(
-      () => removeCommand(['test'], {}),
-      {
-        name: 'WorkstreamError',
-        code: 'NON_TTY_PROMPT'
-      }
-    );
-    Object.defineProperty(process.stdin, 'isTTY', { value: originalIsTTY, configurable: true });
+    try {
+      await assert.rejects(
+        () => removeCommand(['test'], {}),
+        {
+          name: 'WorkstreamError',
+          code: 'NON_TTY_PROMPT'
+        }
+      );
+    } finally {
+      Object.defineProperty(process.stdin, 'isTTY', { value: originalIsTTY, configurable: true });
+    }
     delete process.env.WORKSTREAM_HOME;
     cleanupTmpDir(dir);
   });
