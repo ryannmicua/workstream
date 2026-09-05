@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { parseDocument } from 'yaml';
 import { getRegistryPath } from '../registry.mjs';
 import { WorkstreamError } from '../errors.mjs';
@@ -55,7 +55,7 @@ export function addCommand(args, flags) {
     );
   }
 
-  const newEntry = { name, path: flags.path };
+  const newEntry = { name, path: resolve(process.cwd(), flags.path) };
   if (flags.context) newEntry.context = flags.context;
   if (flags.desc) newEntry.description = flags.desc;
 
