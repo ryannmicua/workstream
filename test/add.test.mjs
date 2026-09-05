@@ -1,7 +1,7 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { addCommand } from '../src/commands/add.mjs';
 import { loadRegistry } from '../src/registry.mjs';
 import { WorkstreamError } from '../src/errors.mjs';
@@ -116,6 +116,36 @@ describe('add', () => {
     addCommand(['newone'], { path: '/tmp/new' });
     const raw = readFileSync(join(dir, '.workstream', 'registry.yaml'), 'utf8');
     assert.ok(raw.includes('# inline comment'));
+    delete process.env.WORKSTREAM_HOME;
+    cleanupTmpDir(dir);
+  });
+
+  it('resolves relative --path to absolute path', () => {
+    const dir = createTmpDir();
+    process.env.WORKSTREAM_HOME = dir;
+    addCommand(['relpath'], { path: '.' });
+    const { entries } = loadRegistry(dir);
+    assert.equal(entries[0].path, resolve(process.cwd()));
+    delete process.env.WORKSTREAM_HOME;
+    cleanupTmpDir(dir);
+  });
+
+  it('resolves relative subdirectory path', () => {
+    const dir = createTmpDir();
+    process.env.WORKSTREAM_HOME = dir;
+    addCommand(['subpath'], { path: './subdir' });
+    const { entries } = loadRegistry(dir);
+    assert.equal(entries[0].path, resolve(process.cwd(), './subdir'));
+    delete process.env.WORKSTREAM_HOME;
+    cleanupTmpDir(dir);
+  });
+
+  it('passes absolute path through unchanged', () => {
+    const dir = createTmpDir();
+    process.env.WORKSTREAM_HOME = dir;
+    addCommand(['abspath'], { path: '/absolute/path' });
+    const { entries } = loadRegistry(dir);
+    assert.equal(entries[0].path, '/absolute/path');
     delete process.env.WORKSTREAM_HOME;
     cleanupTmpDir(dir);
   });

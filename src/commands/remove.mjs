@@ -1,8 +1,9 @@
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
+import { createInterface } from 'node:readline';
 import { loadRegistry, getRegistryPath } from '../registry.mjs';
 import { WorkstreamError } from '../errors.mjs';
 
-export function removeCommand(args, flags) {
+export async function removeCommand(args, flags) {
   const name = args[0];
   if (!name) {
     throw new WorkstreamError(
@@ -32,8 +33,13 @@ export function removeCommand(args, flags) {
       );
     }
 
-    process.stdout.write(`Remove "${name}"? [y/N] `);
-    const answer = readFileSync(process.stdin.fd, 'utf8').trim().toLowerCase();
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    const answer = await new Promise(resolve => {
+      rl.question(`Remove "${name}"? [y/N] `, line => {
+        rl.close();
+        resolve(line.trim().toLowerCase());
+      });
+    });
     if (answer !== 'y' && answer !== 'yes') {
       return { message: 'Cancelled.' };
     }
