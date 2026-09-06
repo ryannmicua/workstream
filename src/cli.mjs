@@ -14,6 +14,7 @@ Commands:
   add <name> --path <path> [--context <file>] [--desc <text>]
   remove <name> [-q]    Remove a workstream entry
   setup                 Install skill, create registry, configure completion
+  help                  Show this help message
 
 Options:
   --help                Show this help message
@@ -102,6 +103,10 @@ export async function run(argv) {
         const { setupCommand } = await import('./commands/setup.mjs');
         result = await setupCommand(args, flags);
         break;
+      }
+      case 'help': {
+        console.log(USAGE);
+        process.exit(0);
       }
       case '--completion-names': {
         const { entries } = listCommand([], { names: true });

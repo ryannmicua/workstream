@@ -14,6 +14,7 @@ This document covers every `workstream` subcommand: synopsis, accepted flags, st
 - [add](#add)
 - [remove](#remove)
 - [setup](#setup)
+- [help](#help)
 
 ## Global Flags
 
@@ -361,7 +362,35 @@ workstream setup
 
 ---
 
-## Hidden Command: --completion-names
+## help
+
+### Synopsis
+
+```
+workstream help
+```
+
+### Flags
+
+None.
+
+### Behavior
+
+Prints the same usage message as `--help` and exits.
+
+### Output
+
+The full USAGE text listing all commands and options.
+
+### Errors
+
+None.
+
+### Examples
+
+```bash
+workstream help
+```
 
 ```
 workstream --completion-names
