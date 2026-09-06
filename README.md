@@ -50,6 +50,8 @@ workstream remove myproject -q
 workstream setup
 ```
 
+For detailed flag reference, behavior, output formats, and error codes, see [docs/subcommands.md](docs/subcommands.md).
+
 ## Schema
 
 The registry is a flat YAML list at `~/.workstream/registry.yaml`.
